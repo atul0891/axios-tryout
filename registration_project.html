@@ -47,11 +47,12 @@
             var storedData=[]
 // Add the new data to the existing data array
 storedData.push(myObj);
-axios.post("https://crudcrud.com/api/da0697dfc4e648f0b4a52bcaf48bb642/registrationdata",myObj)
+
+axios.post("https://crudcrud.com/api/b64a8b99ade84342b5735cf2c6df91d3/registrationdata",myObj)
 
 .then(respose=>{
-    console.log("Data stored successfully:", respose.data);
-
+    console.log("Data stored successfully:", respose);
+    
 
 // Store the updated data in local storage
 //localStorage.setItem("myObj", JSON.stringify(storedData));
@@ -68,10 +69,18 @@ axios.post("https://crudcrud.com/api/da0697dfc4e648f0b4a52bcaf48bb642/registrati
       .catch(err=>{
     console.error(err)
 })
+
          })
 
+        //  window.addEventListener("DOMContentLoaded" , ()=>{
+            axios.get("https://crudcrud.com/api/b64a8b99ade84342b5735cf2c6df91d3/registrationdata")
+            .then((response)=>{
+                console.log(response)
+            })
+        //  })
+
         function displayStoredData() {
-            let apiUrl="https://crudcrud.com/api/da0697dfc4e648f0b4a52bcaf48bb642/registrationdata"
+            let apiUrl="https://crudcrud.com/api/b64a8b99ade84342b5735cf2c6df91d3/registrationdata"
             var storedData=axios.get(apiUrl)
             
             .then(respose=>{
@@ -80,8 +89,9 @@ axios.post("https://crudcrud.com/api/da0697dfc4e648f0b4a52bcaf48bb642/registrati
 //})
 //.catch(err=>{
   //  console.error(err)
-//})
+//})            
             //var storedData = JSON.parse(localStorage.getItem("myObj")) || [];
+            
             var dataList = document.getElementById("dataList");
     
             dataList.innerHTML = "";
@@ -110,7 +120,7 @@ axios.post("https://crudcrud.com/api/da0697dfc4e648f0b4a52bcaf48bb642/registrati
   if(e.target.classList.contains("delete")){
     if(confirm('Are You Sure?')){
       
-     // storedData.splice(index,1)
+     //storedData.splice(index,1)
       //localStorage.setItem("myObj", JSON.stringify(storedData));
       axios.delete(apiUrl + '/' + user._id) // Delete the entry using the _id
                                 .then(function(response) {
@@ -137,24 +147,24 @@ editBtn.addEventListener('click',function(){
     user.description=newDescipt
     user.category=newCategory
 
-    //storedData[index]=user
-    //localStorage.setItem("myObj", JSON.stringify(storedData));
-    axios.put(apiUrl+'/'+user._id,user)
-    .then(respose=>{
+   // storedData[index]=user
+  //  localStorage.setItem("myObj", JSON.stringify(storedData));
+    // axios.put(apiUrl+'/'+user._id,user)
+    // .then(respose=>{
     
-    console.log(respose.data);
-    displayStoredData(respose.data)
+    // console.log(respose.data);
+    displayStoredData()
 })
-.catch(err=>{
-    console.error(err)
-})               
-   // displayStoredData();
+// .catch(err=>{
+//     console.error(err)
+// })               
+    displayStoredData();
 
 
 
             }); 
             })
-        })
+        
         // .catch(err=>{
         //     console.error(err);
         // })
