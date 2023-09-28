@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="form">
+    <label for="txt">Add Amount</label>
+    <input type="text" id="txt" name="text"></input>
+    <label for="descript">Add Description</label>
+    <input type="text" id="descript" name="description"></input>
+    <label for="category">Choose a category:</label>
+    <select id="category" name="category">
+    <option value="books">Books</option>
+    <option value="electronic">Electronic Gadgets</option>
+    <option value="clothes">Clothes</option>
+    <option value="toys">Toys</option>
+    <option value="shoes">Shoes</option>
+    <option value="appliances">Home Appliances</option>
+    <option value="furniture">Furniture</option>
+    </select>
+    <button>Add Expense</button>
+    </form>
+    <ul id="dataList"></ul>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script>
+         document.getElementById("form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            var amount=document.getElementById('txt').value
+            var description=document.getElementById('descript').value
+            var category=document.getElementById('category').value
+
+            var myObj={
+            amount:amount,
+            description:description,
+            category:category
+            }
+
+          
+              // Get the current data (if any) from local storage
+             // var storedData = JSON.parse(localStorage.getItem("myObj")) || [];
+            
+            var storedData=[]
+// Add the new data to the existing data array
+storedData.push(myObj);
+axios.post("https://crudcrud.com/api/da0697dfc4e648f0b4a52bcaf48bb642/registrationdata",myObj)
+
+.then(respose=>{
+    console.log("Data stored successfully:", respose.data);
+
+
+// Store the updated data in local storage
+//localStorage.setItem("myObj", JSON.stringify(storedData));
+
+ 
+// Clear the form fields
+    document.getElementById("txt").value = "";
+    document.getElementById("descript").value = "";
+    document.getElementById("category").value = "";
+
+    displayStoredData()
+
+      })
+      .catch(err=>{
+    console.error(err)
+})
+         })
+
+        function displayStoredData() {
+            let apiUrl="https://crudcrud.com/api/da0697dfc4e648f0b4a52bcaf48bb642/registrationdata"
+            var storedData=axios.get(apiUrl)
+            
+            .then(respose=>{
+   // displayStoredData(respose.data)
+    //console.log(respose);
+//})
+//.catch(err=>{
+  //  console.error(err)
+//})
+            //var storedData = JSON.parse(localStorage.getItem("myObj")) || [];
+            var dataList = document.getElementById("dataList");
+    
+            dataList.innerHTML = "";
+    
+            respose.data.forEach(function(user, index) {
+                var listItem = document.createElement("li");
+                listItem.textContent = ` ${index + 1}: Amount spent is ${user.amount} on ${user.description} in  ${user.category} `;
+                dataList.appendChild(listItem);
+
+
+                var dltBtn=document.createElement('button')
+             dltBtn.className="delete"
+             var txt2=document.createTextNode('DELETE')
+             dltBtn.appendChild(txt2)
+             listItem.appendChild(dltBtn)
+
+             var editBtn=document.createElement('button')
+             editBtn.className="edit"
+             var txt3=document.createTextNode('EDIT')
+             editBtn.appendChild(txt3)
+            listItem.appendChild(editBtn)
+
+                           
+        dltBtn.addEventListener('click',removeItem);
+    function removeItem(e){
+  if(e.target.classList.contains("delete")){
+    if(confirm('Are You Sure?')){
+      
+     // storedData.splice(index,1)
+      //localStorage.setItem("myObj", JSON.stringify(storedData));
+      axios.delete(apiUrl + '/' + user._id) // Delete the entry using the _id
+                                .then(function(response) {
+                                    console.log("Data deleted successfully:", response.data);
+                                    displayStoredData();
+                                })
+                                .catch(function(error) {
+                                    console.error("Error deleting data:", error);
+                                });
+       displayStoredData();
+      
+    }else{
+        e.preventDefault()
+    }
+  }
+}
+
+editBtn.addEventListener('click',function(){
+    var newAmount=prompt("Enter new Amount:", user.amount)
+    var newDescipt=prompt("Enter new Description:", user.description)
+    var newCategory=prompt("Enter new Category:", user.category)
+
+    user.amount=newAmount
+    user.description=newDescipt
+    user.category=newCategory
+
+    //storedData[index]=user
+    //localStorage.setItem("myObj", JSON.stringify(storedData));
+    axios.put(apiUrl+'/'+user._id,user)
+    .then(respose=>{
+    
+    console.log(respose.data);
+    displayStoredData(respose.data)
+})
+.catch(err=>{
+    console.error(err)
+})               
+   // displayStoredData();
+
+
+
+            }); 
+            })
+        })
+        // .catch(err=>{
+        //     console.error(err);
+        // })
+            
+    
+           
+         
+        }
+            displayStoredData()
+
+
+          
+ 
+       
+</script>
+</body>
+</html>
