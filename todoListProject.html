@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TO-DO List</title>
+</head>
+<body>
+    <form id="form">
+        <label for="task">ADD TASK</label>
+        <input type="text"id="task"name="task"></input>
+        <label for="description">DESCRIPTION</label>
+        <input type="text"id="description"name="description"></input>
+        <button>SUBMIT</button>
+    </form>
+    <div class="first" id="first">TASKS REMAINING</div>
+    <div class="second" id="second">TASKS DONE</div>
+    <ul id="dataList"></ul>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script>
+        document.getElementById("form").addEventListener("submit",function(event){
+            event.preventDefault()
+
+            var task=document.getElementById('task').value
+            var description=document.getElementById('description').value
+
+            myObj={
+                task:task,
+                description:description
+            }
+
+            var storeData=[]
+           
+
+            axios.post("https://crudcrud.com/api/1d84a901684541d6832c81109c9eaa0d/todo",myObj)
+            .then(response=>{
+                console.log("task added",response.data)
+
+                document.getElementById('task').value=""
+                document.getElementById('description').value=""
+
+                fetchDataAndDisplay()
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        })
+
+        axios.get("https://crudcrud.com/api/1d84a901684541d6832c81109c9eaa0d/todo")
+        .then(response=>{
+            console.log(response)
+        })
+
+        function fetchDataAndDisplay(){
+            apiURL="https://crudcrud.com/api/1d84a901684541d6832c81109c9eaa0d/todo"
+            axios.get(apiURL)
+            .then(response=>{
+                storeData=response.data
+
+                displayStoreData()
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+        }
+        function displayStoreData(){
+    
+            apiURL="https://crudcrud.com/api/1d84a901684541d6832c81109c9eaa0d/todo"
+
+            var dataList = document.getElementById("dataList");
+            var remaining=document.getElementById("first")
+            var done=document.getElementById('second')
+            dataList.innerHTML = "";
+    
+            storeData.forEach(function(user, index) {
+                var listItem = document.createElement("li");
+                listItem.textContent = ` ${index + 1}: ${user.task} details are ${user.description} `;
+                dataList.appendChild(listItem);
+                remaining.appendChild(dataList)
+
+                
+                var doneBtn=document.createElement('button')
+             doneBtn.className="done"
+             var txt2=document.createTextNode('DONE')
+             doneBtn.appendChild(txt2)
+             listItem.appendChild(doneBtn)
+
+             var notDoneBtn=document.createElement('button')
+             notDoneBtn.className="notDone"
+             var txt3=document.createTextNode('X')
+             notDoneBtn.appendChild(txt3)
+            listItem.appendChild(notDoneBtn)
+
+
+            notDoneBtn.addEventListener('click',remove)
+        function remove(event){
+            if(event.target.classList.contains("notDone")){
+           
+                axios.delete(apiURL+'/'+user._id)
+                .then(function(response){
+                    console.log("Data removed successfully", response.data)
+                    fetchDataAndDisplay()
+            })
+            .catch(function(err){
+                console.log(err);
+            })
+            displayStoreData()
+            }
+        }
+
+                doneBtn.addEventListener('click',function moveItem(event){
+                    if(event.target.classList.contains("done")){
+                        //dataList.appendChild(listItem);
+                        done.appendChild(listItem)
+                        
+                        remaining.removeChild(listItem)
+                       /*axios.delete(apiURL+'/'+user._id)
+                       
+                        .then(function(response) {
+                                    console.log("Data moved successfully:", response.data);
+                                    displayStoreData();
+                                })
+                                .catch(function(error) {
+                                    console.error("Error moving data:", error);
+                                }); */
+                                displayStoreData()
+                    }
+                })
+
+              })
+    }
+        fetchDataAndDisplay()
+    </script>
+</body>
+</html>
