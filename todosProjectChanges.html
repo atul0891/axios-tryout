@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TO-DO List</title>
+</head>
+<body>
+    <form id="form">
+        <label for="task">ADD TASK</label>
+        <input type="text"id="task"name="task"></input>
+        <label for="description">DESCRIPTION</label>
+        <input type="text"id="description"name="description"></input>
+        <button>SUBMIT</button>
+    </form>
+    <h2>TASKS REMAINING</h2>
+    <div class="first" id="first"></div>
+    <h2>TASKS DONE</h2>
+    <div class="second" id="second"></div>
+    <!--ul id="dataList"-->
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script>
+         const storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        let tasks = storedTasks;
+        var apiURL="https://crudcrud.com/api/71e40ac057c34a888b2f1d2edaf66851/todo"
+        document.getElementById("form").addEventListener("submit",function(event){
+            event.preventDefault()
+
+            var task=document.getElementById('task').value
+            var description=document.getElementById('description').value
+
+            if(task==""){
+            return
+            }
+            var myObj={
+                task:task,
+                description:description,
+                done:false
+            }
+
+           // var tasks=[]
+           // var tasks=storeData
+            tasks.push(myObj);
+            saveTasks()
+            displayStoreData()
+           
+        })    
+
+        
+
+        
+        function displayStoreData(){
+          var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            
+           // var storeData=[]
+
+             //var dataList = document.getElementById("dataList");
+            var remaining=document.getElementById("first")
+             var doneTask=document.getElementById('second')
+          //  dataList.innerHTML = "";
+                remaining.innerHTML=""
+                doneTask.innerHTML=""
+    
+            tasks.forEach(function(user, index) {
+                var listItem = document.createElement("li");
+                listItem.textContent = ` ${index + 1}: ${user.task} details are ${user.description} `;
+               // dataList.appendChild(listItem);
+               // remaining.appendChild(dataList)
+
+                const button = document.createElement("button");
+                button.textContent = user.done ? "Undo" : "Done";
+                button.addEventListener("click", () => {
+                    toggleTaskDone(index);
+                });
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.addEventListener("click", () => {
+                    deleteTask(index);
+                });
+
+                listItem.appendChild(button);
+                listItem.appendChild(deleteButton);
+
+                if (user.done) {
+                    doneTask.appendChild(listItem);
+                } else {
+                    remaining.appendChild(listItem);
+                }
+
+            })
+        }
+function toggleTaskDone(index) {
+            tasks[index].done = !tasks[index].done;
+            saveTasks();
+           // localStorage.setItem("storeData", JSON.stringify(myObj))
+            displayStoreData();
+        }
+
+        // Delete a task
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+           saveTasks();
+           //localStorage.setItem("storeData", JSON.stringify(myObj))
+            displayStoreData();
+        }
+
+        function saveTasks(){
+            localStorage.setItem("tasks", JSON.stringify(tasks))
+        }
+
+        displayStoreData()
+    </script>
+</body>
+</html>
